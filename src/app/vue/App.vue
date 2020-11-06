@@ -8,7 +8,7 @@
               <form @submit.prevent="addTask">
                 <div class="form-group">
                   <input
-                    v-model="task.title"
+                    v-model="task.nota"
                     type="text"
                     placeholder="titulo"
                     class="form-control"
@@ -16,7 +16,7 @@
                 </div>
                 <div class="form-group">
                   <textarea
-                    v-model="task.description"
+                    v-model="task.descripcion"
                     cols="30"
                     rows="10"
                     class="form-control"
@@ -29,7 +29,35 @@
           </div>
         </div>
         <div class="col-md-6">
-          <h1 class="text-center">hola mundo</h1>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Nota</th>
+                <th>Description</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(item, index) of allTask" :key="index">
+                <th>{{ item.nota }}</th>
+                <th>{{ item.descripcion }}</th>
+                <th class="text-center">
+                  <input
+                    type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    value="Del"
+                    @click="deleteTask(item._id)"
+                  />
+                  <input
+                    type="button"
+                    class="btn btn-sm btn-outline-success"
+                    value="Upt"
+                    @click="updateTaskMethod(item._id)"
+                  />
+                </th>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -41,15 +69,80 @@ export default {
   data() {
     return {
       task: {
-        title: "",
-        description: "",
+        nota: "",
+        descripcion: ""
       },
+      allTask: [],
+      update: false,
+      updateTask: '',
     };
   },
-  methods: {
-    addTask: function () {
-      console.log(this.task);
-    },
+  created() {
+    this.getTask();
   },
+  methods: {
+    getTask() {
+      fetch("/api/getNota")
+        .then(response => response.json())
+        .then(data => {
+          this.allTask = data;
+        });
+    },
+    addTask: function() {
+      if (!this.update) {
+        fetch("/api/newNota", {
+          method: "POST",
+          body: JSON.stringify(this.task),
+          headers: {
+            Accept: "*/*",
+            "Content-type": "application/x-www-form-urlencoded",
+            "Content-type": "application/json"
+          }
+        });
+      } else {
+        fetch("/api/putNota/" + this.updateTask, {
+          method: "PUT",
+          headers: {
+            Accept: "*/*",
+            "Content-type": "application/x-www-form-urlencoded",
+            "Content-type": "application/json"
+          },
+          body: JSON.stringify(this.task)
+        });
+        this.update = false;
+      }
+      // .then(response => response.json())
+      // .then(data => console.log(data));
+      this.clearData();
+      this.getTask();
+    },
+    deleteTask: function(id) {
+      fetch("/api/deleteNota/" + id, {
+        method: "DELETE",
+        headers: {
+          Accept: "*/*",
+          "Content-type": "application/x-www-form-urlencoded",
+          "Content-type": "application/json"
+        }
+      });
+      this.getTask();
+    },
+    updateTaskMethod: function(id) {
+      this.update = true;
+      this.updateTask = id;
+      // const data = this.allTask.find((item) => item == id);
+      this.allTask.forEach(data => {
+        if(data._id == id){
+          this.task.nota = data.nota;
+          this.task.descripcion = data.descripcion;
+        }
+      });
+      // this.getTask();
+    },
+    clearData() {
+      this.task.nota = "";
+      this.task.descripcion = "";
+    }
+  }
 };
 </script>
