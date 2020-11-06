@@ -8,13 +8,6 @@ const Telcel = require('../models/Telcel');
 const Notas = require('../models/Nota');
 const { request, response } = require('express');
 
-// For POST-Support
-// const multer = require('multer');
-// const upload = multer();
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
-// upload.array(),
-
 router.get('/getRegion', async (req, res) => {
     const data = await Telcel.find();
     res.json(data);
