@@ -65,13 +65,21 @@
 </template>
 
 <script>
+class Nota {
+  constructor(nota,descripcion){
+    this.nota = nota;
+    this.descripcion = descripcion
+  }
+}
+
 export default {
   data() {
     return {
-      task: {
-        nota: "",
-        descripcion: ""
-      },
+      task: new Nota(),
+      // {
+      //   nota: "",
+      //   descripcion: ""
+      // },
       allTask: [],
       update: false,
       updateTask: '',
@@ -140,8 +148,9 @@ export default {
       // this.getTask();
     },
     clearData() {
-      this.task.nota = "";
-      this.task.descripcion = "";
+      // this.task.nota = "";
+      // this.task.descripcion = "";
+      this.task = new Nota();
     }
   }
 };
